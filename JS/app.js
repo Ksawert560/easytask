@@ -29,78 +29,147 @@ if(localStorage.getItem('task')===null){
     const taskDiv = document.createElement('div')
     taskDiv.className = 'task';
     const p = document.createElement('span');
-    const inputRadio = document.createElement('input');
-    inputRadio.type = 'radio';
-    inputRadio.className = 'inputDone';
-    inputRadio.id = i;
-    const icon = document.createElement('i')
-    icon.className='fa-solid fa-grip-vertical';
-    icon.id=i;
+    const inputCheckbox = document.createElement('input');
+    inputCheckbox.type = 'checkbox';
+    inputCheckbox.className = 'inputDone';
+    inputCheckbox.id = i;
+    const iconGrip = document.createElement('i')
+    iconGrip.className='fa-solid fa-grip-vertical';
+
+    const iconTrash = document.createElement('i')
+    iconTrash.className="fa-solid fa-trash";
+    iconTrash.id=i;
+
+    const iconStar = document.createElement('i')
+    iconStar.className='fa-regular fa-star'
+    iconStar.id=i;
+
+    if(tasks[i][1]==true){
+      p.style.textDecoration='line-through';
+      inputCheckbox.checked=true;
+    }
+    if(tasks[i][2]==true){
+      iconStar.className='fa-solid fa-star'
+      taskDiv.style.color='var(--background)'
+      taskDiv.style.background = 'var(--accentColor)'
+    }
   
-    let txt = tasks.map(function(item){
-      return item['task']
-    })
-  
-    p.innerText=tasks[i]
+    p.innerText=tasks[i][0]
     p.className = 'txt'
-    taskDiv.appendChild(inputRadio)
+    taskDiv.appendChild(inputCheckbox)
     taskDiv.appendChild(p)
-    taskDiv.appendChild(icon)
+    taskDiv.appendChild(iconStar)
+    taskDiv.appendChild(iconTrash)
+    taskDiv.appendChild(iconGrip)
     tasksDiv.appendChild(taskDiv)
   }
 
 
 
 createBtn.addEventListener('click', function(){
-  let newTask = {
-    task: taskTxt.value,
-    done: false,
+  if(taskTxt.value!=''){
+    let newTask = {
+      task: taskTxt.value,
+      done: false,
+      important: false
+    }
+    console.log(newTask.task)
+    tasks.push(Object.values(newTask))
+    localStorage.setItem('task', JSON.stringify(tasks))
+  
+    createNewDiv.style.visibility = 'hidden';
+  
+    const taskDiv = document.createElement('div')
+    taskDiv.className = 'task';
+    const p = document.createElement('span');
+  
+    const inputCheckbox = document.createElement('input');
+    inputCheckbox.type = 'radio';
+    inputCheckbox.className = 'inputDone';
+    let lenght = tasks.length
+    p.innerText=tasks[lenght-1];
+    p.style.width = '90%'
+    p.className = 'txt'
+
+    const iconGrip = document.createElement('i')
+    iconGrip.className='fa-solid fa-grip-vertical';
+    inputCheckbox.id = tasks.length-1;
+
+    const iconTrash = document.createElement('i')
+    iconTrash.className="fa-solid fa-trash";
+    iconTrash.id = tasks.length-1
+
+    const iconStar = document.createElement('i')
+    iconStar.className='fa-regular fa-star'
+    iconStar.id=tasks.length-1;
+    taskDiv.appendChild(inputCheckbox)
+    taskDiv.appendChild(p)
+    taskDiv.appendChild(iconStar)
+    taskDiv.appendChild(iconTrash)
+    taskDiv.appendChild(iconGrip)
+    tasksDiv.appendChild(taskDiv)
+  
+    taskTxt.value = ''
+    location.reload()
   }
-  console.log(newTask.task)
-  tasks.push([newTask.task])
-  localStorage.setItem('task', JSON.stringify(tasks))
-
-  createNewDiv.style.visibility = 'hidden';
-
-  const taskDiv = document.createElement('div')
-  taskDiv.className = 'task';
-  const p = document.createElement('span');
-
-  const inputRadio = document.createElement('input');
-  inputRadio.type = 'radio';
-  inputRadio.className = 'inputDone';
-  let lenght = tasks.length
-  p.innerText=tasks[lenght-1];
-  p.style.width = '90%'
-
-  const icon = document.createElement('i')
-  icon.className='fa-solid fa-grip-vertical';
-  icon.id = tasks.length-1
-  inputRadio.id = tasks.length-1;
-  // icon.id = ta
-  taskDiv.appendChild(inputRadio)
-  taskDiv.appendChild(p)
-
-  taskDiv.appendChild(icon)
-  tasksDiv.appendChild(taskDiv)
-
-  taskTxt.value = ''
-  location.reload()
+  else{
+    createNewDiv.style.visibility = 'hidden';
+    taskTxt.value = ''
+    setTimeout(() => (alert("Invalid task")), 300);
+  }
 })
 
 const currentTasks = localStorage.getItem('task')
 
-//deleting task
+// =====Deleting task======
+const trashIcon = document.querySelectorAll('.fa-trash');
 
+trashIcon.forEach(el => {
+    let id = el.id
+    el.addEventListener('click', function(){
+    tasks.splice(id, 1)
+    localStorage.setItem('task', JSON.stringify(tasks))
+    location.reload()
+  })
+})
+
+// =====Setting tasks as important=====
+const starIcon = document.querySelectorAll('.fa-star')
+
+starIcon.forEach(el => {
+  let id = el.id;
+  el.addEventListener('click', function(){
+    if(el.className=='fa-solid fa-star'){
+      el.className='fa-regular fa-star'
+      tasks[id][2]=false;
+      localStorage.setItem('task', JSON.stringify(tasks))
+    }
+    else{
+      el.className='fa-solid fa-star'
+      tasks[id][2]=true;
+      localStorage.setItem('task', JSON.stringify(tasks))
+    }
+    location.reload()
+  })
+})
+// =====Setting tasks as done=====
 const taskDone = document.querySelectorAll('.inputDone')
+
 
 taskDone.forEach(el => {
   let id = el.id
     el.addEventListener('click', function(){
-    el.parentElement.style.textDecoration='line-through'
-    tasks.splice(id, 1)
-    console.log(tasks)
-    localStorage.setItem('task', JSON.stringify(tasks))
+      if(el.checked==true){
+        el.parentElement.children[1].style.textDecoration='line-through';
+        tasks[id][1]=true;
+        tasks.push(tasks.splice(id, 1)[0]);
+        localStorage.setItem('task', JSON.stringify(tasks))
+      }
+      else{
+        el.parentElement.children[1].style.textDecoration='none';
+        tasks[id][1]=false;
+        localStorage.setItem('task', JSON.stringify(tasks))
+      }
     location.reload()
   })
 })
@@ -108,11 +177,8 @@ taskDone.forEach(el => {
 
 
 
-
-// Sorting list 
+// =====Sorting list===== 
 const gripIcon = document.querySelectorAll('.fa-grip-vertical');
-
-
 const dragArea = document.querySelector('#tasks');
 new Sortable(dragArea, {
   group: 'list-of-tasks',
@@ -149,4 +215,4 @@ gripIcon.forEach(el => {
 
 
 
-// console.log(tasks)
+console.log(tasks)

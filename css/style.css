@@ -92,6 +92,7 @@ section#tasksDiv #tasks .task{
   background-color: var(--taskBackground);
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
 }
 section#tasksDiv #tasks{
   /* background-color: red; */
@@ -99,8 +100,15 @@ section#tasksDiv #tasks{
   height: calc(100% - 40px);
   overflow-y: scroll;
 }
+.task i{
+  opacity: 0.8;
+  transition: all .2s ease;
+}
+.task i:hover{
+  opacity: 1;
+}
 .task .txt{
-  width: 90%;
+  width: 80%;
   word-wrap: break-word;
 }
 .task input{
@@ -172,6 +180,7 @@ section#createNewDiv input, textarea{
     resize: none;
 }
 section#createNewDiv input[type="submit"]{
+  padding: 5px 0;
   font-weight: 900;
   font-size: 16px;
   transition: .2s ease;
@@ -196,6 +205,15 @@ section#createNewDiv input:focus, textarea:focus{
 }
 @media screen and (max-width: 660px){
   .task .txt{
-    max-width: 85%;
+    max-width: 65%;
+  }
+}
+@media screen and (max-width: 500px){
+  html, body{
+    overflow: hidden;
+  }
+  main{
+    width: 90%;
+    height: 95vh;
   }
 }
