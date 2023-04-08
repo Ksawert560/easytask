@@ -1,4 +1,4 @@
-const tasksDiv = document.querySelector('#tasksDiv')
+const tasksDiv = document.querySelector('#tasks')
 
 const createNewBtn = document.querySelector("#createNew");
 const createNewDiv = document.querySelector("#createNewDiv");
@@ -34,7 +34,7 @@ if(localStorage.getItem('task')===null){
     inputRadio.className = 'inputDone';
     inputRadio.id = i;
     const icon = document.createElement('i')
-    icon.className='fa-solid fa-trash';
+    icon.className='fa-solid fa-grip-vertical';
     icon.id=i;
   
     let txt = tasks.map(function(item){
@@ -50,7 +50,7 @@ if(localStorage.getItem('task')===null){
   }
 
 
-// console.log("task: "+tasks[0])
+
 createBtn.addEventListener('click', function(){
   let newTask = {
     task: taskTxt.value,
@@ -74,7 +74,7 @@ createBtn.addEventListener('click', function(){
   p.style.width = '90%'
 
   const icon = document.createElement('i')
-  icon.className='fa-solid fa-trash';
+  icon.className='fa-solid fa-grip-vertical';
   icon.id = tasks.length-1
   inputRadio.id = tasks.length-1;
   // icon.id = ta
@@ -94,26 +94,10 @@ const currentTasks = localStorage.getItem('task')
 
 const taskDone = document.querySelectorAll('.inputDone')
 
-  taskDone.forEach(el => {
-    let id = el.id
+taskDone.forEach(el => {
+  let id = el.id
     el.addEventListener('click', function(){
-      el.parentElement.style.textDecoration='line-through'
-      tasks.splice(id, 1)
-      console.log(tasks)
-      localStorage.setItem('task', JSON.stringify(tasks))
-      location.reload()
-    })
-  })
-
-
-
-
-
-const trashIcon = document.querySelectorAll('.fa-trash');
-
-trashIcon.forEach(el =>{
-  let id = el.id;
-  el.addEventListener('click', function(){
+    el.parentElement.style.textDecoration='line-through'
     tasks.splice(id, 1)
     console.log(tasks)
     localStorage.setItem('task', JSON.stringify(tasks))
@@ -122,4 +106,47 @@ trashIcon.forEach(el =>{
 })
 
 
-console.log(tasks)
+
+
+
+// Sorting list 
+const gripIcon = document.querySelectorAll('.fa-grip-vertical');
+
+
+const dragArea = document.querySelector('#tasks');
+new Sortable(dragArea, {
+  group: 'list-of-tasks',
+  handle: ".fa-grip-vertical",
+  animation: 350,
+  draggable: ".task",
+  ghostClass: 'ghost',
+  store: {
+    /** 
+     * @param {Sortable}
+     * @returns {Array} 
+    */
+    get: function(sortable){
+      let order = localStorage.getItem(sortable.options.group.name);
+      return order ? order.split('|') : [];
+    },
+    /**
+    * @param {Sortable}
+    */
+   set: function(sortable){
+    let order = sortable.toArray();
+    localStorage.setItem(sortable.options.group.name, order.join('|'));
+   }
+    
+  }
+  
+})
+gripIcon.forEach(el => {
+  el.addEventListener('click', function(){
+    el.style.cursor = 'grabbing';
+})
+
+})
+
+
+
+// console.log(tasks)
